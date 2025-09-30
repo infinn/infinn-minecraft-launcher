@@ -58,12 +58,13 @@ class MainWindow:
         self.verision_cmbbx.current(0)
 
         # memory
-        memory_lbl = tk.Label(data_frame, text="Memory:", fg=TXT_WHITE, bg=BG_GRAY)
+        memory_lbl = tk.Label(data_frame, text="Memory (Ram):", fg=TXT_WHITE, bg=BG_GRAY)
         memory_lbl.grid(row=2, column=0, padx=5, pady=5, sticky="nsew") 
 
-        self.memory_entry = tk.Scale(data_frame, from_= 2, to= self.mine.get_user_ram()["total"])
+        self.memory_entry = tk.Scale(data_frame, from_= 2, to= self.mine.get_user_ram()["total"], command=self._on_scale_move)
         self.memory_entry.grid(row=2, column=1, padx=5, pady=5, sticky="nsew") 
-        self.memory_entry.config(orient=tk.HORIZONTAL)
+        self.memory_entry.config(orient=tk.HORIZONTAL, fg=TXT_WHITE, bg=BG_GRAY, borderwidth=False)
+        self.memory_entry.set(4)
 
         # directory
         directory_lbl = tk.Label(data_frame, text="Directory:", fg=TXT_WHITE, bg=BG_GRAY)
@@ -118,6 +119,14 @@ class MainWindow:
 
     def _on_button_click(self):
         print("test")
+
+    def _on_scale_move(self, arg):
+        if int(arg) > int(self.mine.get_user_ram()["total"]) - 4:
+            self.memory_entry.config(fg="red")
+        elif int(arg) > int(self.mine.get_user_ram()["total"]) - 6:
+            self.memory_entry.config(fg="yellow")
+        else:
+            self.memory_entry.config(fg="white")
 
     def _on_play_button(self):
         print(self.verision_cmbbx.get())
