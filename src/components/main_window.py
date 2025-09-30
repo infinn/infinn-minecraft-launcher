@@ -1,5 +1,6 @@
 import tkinter as tk
 import os
+import asyncio
 
 from tkinter import ttk
 from src.config import WINDOW_WIDTH, WINDOW_HEIGHT, BG_BLACK, BG_GRAY, TXT_WHITE
@@ -54,13 +55,17 @@ class MainWindow:
         memory_lbl = tk.Label(data_frame, text="Memory:", fg=TXT_WHITE, bg=BG_GRAY)
         memory_lbl.grid(row=2, column=0, padx=5, pady=5, sticky="nsew") 
 
+        self.memory_entry = tk.Scale(data_frame, from_= 2, to= self.mine.get_user_ram()["total"])
+        self.memory_entry.grid(row=2, column=1, padx=5, pady=5, sticky="nsew") 
+        self.memory_entry.config(orient=tk.HORIZONTAL)
+
         # directory
         directory_lbl = tk.Label(data_frame, text="Directory:", fg=TXT_WHITE, bg=BG_GRAY)
-        directory_lbl.grid(row=2, column=0, padx=5, pady=5, sticky="nsew") 
+        directory_lbl.grid(row=3, column=0, padx=5, pady=5, sticky="nsew") 
 
         self.directory_user_lbl = tk.Entry(data_frame, fg=TXT_WHITE, bg=BG_BLACK)
-        self.directory_user_lbl.grid(row=2, column=1, padx=5, pady=5, sticky="nsew") 
-        self.directory_user_lbl.insert(0, self.mine.get_minecrat_directory())
+        self.directory_user_lbl.grid(row=3, column=1, padx=5, pady=5, sticky="nsew") 
+        self.directory_user_lbl.insert(0, self.mine.MINECRAFT_DIRECTORY)
 
 
 
@@ -113,3 +118,21 @@ class MainWindow:
         print(self.username_entry.get())
         self.progressbar.step(50)
         self.status_info.config(text="Starting", fg="yellow")
+    
+    def _on_download_button(self):
+        version = self.verision_cmbbx.get().split(" ")[0]
+        self.status_info.config(text="Downloading...", fg="yellow")
+        
+        asyncio.create_task(self.mine.install_minecraft(version))
+    
+    def set_status(self, text: str):
+        self.status_info.config(text=text, fg="yellow")
+        self.master.update_idletasks()
+
+    def set_progress(self, value: int):
+        self.progressbar["value"] = value
+        self.master.update_idletasks()
+
+    def set_max(self, max_value: int):
+        self.progressbar["maximum"] = max_value
+        self.master.update_idletasks()
