@@ -24,11 +24,11 @@ class MainWindow:
             "setMax": self.set_max,
         }
 
-        self._create_widgets(self.mine.get_local_version())
+        self._create_widgets()
 
         
 
-    def _create_widgets(self, versions):
+    def _create_widgets(self):
         app_name_lbl = tk.Label(self.master, text="Minecraft Launcher", fg=TXT_WHITE, bg=BG_BLACK, font=("Arial", 30))
         app_name_lbl.pack(pady=20)
 
@@ -37,7 +37,7 @@ class MainWindow:
         data_frame = tk.Frame(self.master)
         data_frame.configure(background=BG_GRAY)
         
-        data_frame.pack(pady=20, padx=20, ipady=20, ipadx=20, fill="both", expand=True) 
+        data_frame.pack(pady=20, padx=20, ipady=20, ipadx=20, fill="x") 
 
         data_frame.grid_columnconfigure(0, weight=1, minsize=100) 
         data_frame.grid_columnconfigure(1, weight=2, minsize=300) 
@@ -53,26 +53,32 @@ class MainWindow:
         version_lbl = tk.Label(data_frame, text="Version:", fg=TXT_WHITE, bg=BG_GRAY)
         version_lbl.grid(row=1, column=0, padx=5, pady=5, sticky="nsew") 
         
-        self.verision_cmbbx = ttk.Combobox(data_frame, state="readonly", values=versions)
+        self.verision_cmbbx = ttk.Combobox(data_frame, state="readonly")
         self.verision_cmbbx.grid(row=1, column=1, columnspan=2, pady=10) 
-        self.verision_cmbbx.current(0)
+
+        self.only_local_var = tk.BooleanVar()
+        self.only_local_checkbtn = tk.Checkbutton(data_frame, text="local", variable=self.only_local_var, command=self._update_version)
+        self.only_local_checkbtn.grid(row=2, column=0, columnspan=2, pady=10) 
+
+        self.only_released_var = tk.BooleanVar()
+        self.only_released_checkbtn = tk.Checkbutton(data_frame, text="released", variable=self.only_released_var, command=self._update_version)
+        self.only_released_checkbtn.grid(row=2, column=1, columnspan=2, pady=10) 
 
         # memory
         memory_lbl = tk.Label(data_frame, text="Memory (Ram):", fg=TXT_WHITE, bg=BG_GRAY)
-        memory_lbl.grid(row=2, column=0, padx=5, pady=5, sticky="nsew") 
+        memory_lbl.grid(row=3, column=0, padx=5, pady=5, sticky="nsew") 
 
         self.memory_entry = tk.Scale(data_frame, from_= 2, to= self.mine.get_user_ram()["total"], command=self._on_scale_move)
-        self.memory_entry.grid(row=2, column=1, padx=5, pady=5, sticky="nsew") 
+        self.memory_entry.grid(row=3, column=1, padx=5, pady=5, sticky="nsew") 
         self.memory_entry.config(orient=tk.HORIZONTAL, fg=TXT_WHITE, bg=BG_GRAY, borderwidth=False)
-        self.memory_entry.set(4)
+        
 
         # directory
         directory_lbl = tk.Label(data_frame, text="Directory:", fg=TXT_WHITE, bg=BG_GRAY)
-        directory_lbl.grid(row=3, column=0, padx=5, pady=5, sticky="nsew") 
+        directory_lbl.grid(row=4, column=0, padx=5, pady=5, sticky="nsew") 
 
         self.directory_user_lbl = tk.Entry(data_frame, fg=TXT_WHITE, bg=BG_BLACK)
-        self.directory_user_lbl.grid(row=3, column=1, padx=5, pady=5, sticky="nsew") 
-        self.directory_user_lbl.insert(0, self.mine.MINECRAFT_DIRECTORY)
+        self.directory_user_lbl.grid(row=4, column=1, padx=5, pady=5, sticky="nsew") 
 
 
 
@@ -80,7 +86,7 @@ class MainWindow:
         status_frame = tk.Frame(self.master)
         status_frame.configure(background=BG_GRAY)
 
-        status_frame.pack(pady=20, padx=20, ipady=20, ipadx=20, fill="both", expand=True) 
+        status_frame.pack(pady=20, padx=20, ipady=20, ipadx=20, fill="x") 
 
         status_frame.grid_columnconfigure(0, weight=1, minsize=100) 
         status_frame.grid_columnconfigure(1, weight=2, minsize=300) 
@@ -117,6 +123,25 @@ class MainWindow:
         version_app_lbl = tk.Label(self.master, text="MinecraftLauncher v0.1 (by Infinn)", fg=BG_GRAY, bg=BG_BLACK)
         version_app_lbl.pack()
 
+        # --- Set variable from save --- 
+
+        # username
+        self.username_entry.insert(0, self.mine.username)
+        
+        # version
+        self.verision_cmbbx.config(values=self.mine.get_version())
+        self.verision_cmbbx.current(0)
+
+        self.only_local_checkbtn.select()
+        self.only_released_checkbtn.select()
+        
+        # memory
+        self.memory_entry.set(4)
+
+        # path
+        self.directory_user_lbl.insert(0, self.mine.MINECRAFT_DIRECTORY)
+
+
     def _on_button_click(self):
         print("test")
 
@@ -150,4 +175,13 @@ class MainWindow:
 
     def set_max(self, max_value: int):
         self.progressbar["maximum"] = max_value
+        self.master.update_idletasks()
+
+    def _update_version(self):
+        only_local = self.only_local_var.get()
+        only_release = self.only_released_var.get()
+
+        new_version = self.mine.get_version(only_local, only_release)
+
+        self.verision_cmbbx.config(values=new_version)
         self.master.update_idletasks()
