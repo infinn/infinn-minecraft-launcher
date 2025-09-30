@@ -13,11 +13,7 @@ class MineManager:
 
         self._ensure_file()
         
-        self.mine.callback = {
-            "setStatus": self.set_status,
-            "setProgress": self.set_progress,
-            "setMax": self.set_max,
-        }
+        self.callback = {}
     
     def _ensure_file(self):
         """

@@ -18,6 +18,12 @@ class MainWindow:
 
         self.mine = MineManager(USER_WINDOWS)
 
+        self.mine.callback = {
+            "setStatus": self.set_status,
+            "setProgress": self.set_progress,
+            "setMax": self.set_max,
+        }
+
         self._create_widgets(self.mine.get_local_version())
 
         
@@ -122,7 +128,7 @@ class MainWindow:
     def _on_download_button(self):
         version = self.verision_cmbbx.get().split(" ")[0]
         self.status_info.config(text="Downloading...", fg="yellow")
-        
+
         asyncio.create_task(self.mine.install_minecraft(version))
     
     def set_status(self, text: str):
