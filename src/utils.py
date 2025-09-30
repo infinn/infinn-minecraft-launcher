@@ -23,17 +23,26 @@ class MineManager:
         if not os.path.isfile(self.SRC_JSON):
             with open(self.SRC_JSON, "w", encoding="utf-8") as f:
                 json.dump({}, f, indent=4)  # archivo JSON vacío
-
-    def get_local_version(self):
+    
+    def get_version(self, only_local=True, only_released=True):
         local_version = []
+        mojang_version = []
 
         mine_version_local = minecraft_launcher_lib.utils.get_installed_versions(self.MINECRAFT_DIRECTORY)
 
         for version in mine_version_local:
-            local_version.append(version["id"] + f' ({ version["type"] }) [local]')
+            if only_released and version["type"] != "release":
+                continue
+            local_version.append(version["id"] + f' ({version["type"]}) [local]')
 
-        return local_version
-    
+        if not only_local:
+            version_list = minecraft_launcher_lib.utils.get_version_list()
+            for version in version_list:
+                if only_released and version["type"] != "release":
+                    continue
+                mojang_version.append(version["id"] + f' ({version["type"]})')
+
+        return local_version if only_local else local_version + mojang_version
     
     def set_minecrat_directory(self, path):
         self.MINECRAFT_DIRECTORY = path
@@ -101,6 +110,7 @@ class MineManager:
                 f"-Xms{ram}G",
                 ],  # The jvmArguments
             "launcherVersion": VERSION_LAUNCHER,
+            "launcherName":"infinnn_laucher"
         }
 
         minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(version, self.MINECRAFT_DIRECTORY, options)
