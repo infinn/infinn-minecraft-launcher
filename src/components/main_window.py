@@ -4,7 +4,7 @@ import asyncio
 import threading
 
 from tkinter import ttk
-from src.config import WINDOW_WIDTH, WINDOW_HEIGHT, BG_BLACK, BG_GRAY, TXT_WHITE
+from src.config import WINDOW_WIDTH, WINDOW_HEIGHT, BG_BLACK, BG_SECTION, TXT_WHITE, BORDER_BLACK, BORDER_WHITE
 from src.utils import MineManager
 
 
@@ -30,13 +30,13 @@ class MainWindow:
         
 
     def _create_widgets(self):
-        app_name_lbl = tk.Label(self.master, text="Minecraft Launcher", fg=TXT_WHITE, bg=BG_BLACK, font=("Arial", 30))
+        app_name_lbl = tk.Label(self.master, text="Infinn Launcher", fg=TXT_WHITE, bg=BG_BLACK, font=("Arial", 30))
         app_name_lbl.pack(pady=20)
 
 
         # --- User section ---
         data_frame = tk.Frame(self.master)
-        data_frame.configure(background=BG_GRAY)
+        data_frame.configure(background=BG_SECTION)
         
         data_frame.pack(pady=20, padx=20, ipady=20, ipadx=20, fill="x") 
 
@@ -44,14 +44,14 @@ class MainWindow:
         data_frame.grid_columnconfigure(1, weight=2, minsize=300) 
         
         # username entry 
-        username_lbl = tk.Label(data_frame, text="Username:", fg=TXT_WHITE, bg=BG_GRAY)
+        username_lbl = tk.Label(data_frame, text="Username:", fg=TXT_WHITE, bg=BG_SECTION)
         username_lbl.grid(row=0, column=0, padx=5, pady=5, ipady=5, ipadx=5, sticky="nsew") 
 
         self.username_entry = tk.Entry(data_frame, fg=TXT_WHITE, bg=BG_BLACK)
         self.username_entry.grid(row=0, column=1, padx=5, pady=5, sticky="nsew") 
 
         # version 
-        version_lbl = tk.Label(data_frame, text="Version:", fg=TXT_WHITE, bg=BG_GRAY)
+        version_lbl = tk.Label(data_frame, text="Version:", fg=TXT_WHITE, bg=BG_SECTION)
         version_lbl.grid(row=1, column=0, padx=5, pady=5, sticky="nsew") 
         
         self.verision_cmbbx = ttk.Combobox(data_frame, state="readonly")
@@ -66,16 +66,16 @@ class MainWindow:
         self.only_released_checkbtn.grid(row=2, column=1, columnspan=2, pady=10) 
 
         # memory
-        memory_lbl = tk.Label(data_frame, text="Memory (Ram):", fg=TXT_WHITE, bg=BG_GRAY)
+        memory_lbl = tk.Label(data_frame, text="Memory (Ram):", fg=TXT_WHITE, bg=BG_SECTION)
         memory_lbl.grid(row=3, column=0, padx=5, pady=5, sticky="nsew") 
 
         self.memory_entry = tk.Scale(data_frame, from_= 2, to= self.mine.get_user_ram()["total"], command=self._on_scale_move)
         self.memory_entry.grid(row=3, column=1, padx=5, pady=5, sticky="nsew") 
-        self.memory_entry.config(orient=tk.HORIZONTAL, fg=TXT_WHITE, bg=BG_GRAY, borderwidth=False)
+        self.memory_entry.config(orient=tk.HORIZONTAL, fg=TXT_WHITE, bg=BG_SECTION, borderwidth=False)
         
 
         # directory
-        directory_lbl = tk.Label(data_frame, text="Directory:", fg=TXT_WHITE, bg=BG_GRAY)
+        directory_lbl = tk.Label(data_frame, text="Directory:", fg=TXT_WHITE, bg=BG_SECTION)
         directory_lbl.grid(row=4, column=0, padx=5, pady=5, sticky="nsew") 
 
         self.directory_user_lbl = tk.Entry(data_frame, fg=TXT_WHITE, bg=BG_BLACK)
@@ -85,7 +85,7 @@ class MainWindow:
 
         # --- Status section ---
         status_frame = tk.Frame(self.master)
-        status_frame.configure(background=BG_GRAY)
+        status_frame.configure(background=BG_SECTION)
 
         status_frame.pack(pady=20, padx=20, ipady=20, ipadx=20, fill="x") 
 
@@ -93,10 +93,10 @@ class MainWindow:
         status_frame.grid_columnconfigure(1, weight=2, minsize=300) 
 
         # status
-        status_lbl = tk.Label(status_frame, text="Status:", fg=TXT_WHITE, bg=BG_GRAY)
+        status_lbl = tk.Label(status_frame, text="Status:", fg=TXT_WHITE, bg=BG_SECTION)
         status_lbl.grid(row=0, column=0, padx=5, pady=5, sticky="nsew") 
 
-        self.status_info = tk.Label(status_frame, text="Running", fg=TXT_WHITE, bg=BG_GRAY)
+        self.status_info = tk.Label(status_frame, text="Running", fg=TXT_WHITE, bg=BG_SECTION)
         self.status_info.grid(row=0, column=1, padx=5, pady=5, sticky="nsew") 
 
         self.progressbar = ttk.Progressbar(status_frame, orient=tk.HORIZONTAL, length=100)
@@ -121,7 +121,7 @@ class MainWindow:
 
 
 
-        version_app_lbl = tk.Label(self.master, text="MinecraftLauncher v0.1 (by Infinn)", fg=BG_GRAY, bg=BG_BLACK)
+        version_app_lbl = tk.Label(self.master, text="MinecraftLauncher v0.1 (by Infinn)", fg=BG_SECTION, bg=BG_BLACK)
         version_app_lbl.pack()
 
         # --- Set variable from save --- 

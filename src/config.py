@@ -1,4 +1,3 @@
-# src/config.py
 # --- CONSTANTES DE LA VENTANA ---
 WINDOW_TITLE = "Minecraft Launcher"
 WINDOW_WIDTH = 600
@@ -8,6 +7,11 @@ WINDOW_HEIGHT = 900
 DATA_FILE = "data/app_data.json"
 
 # --- CONSTANTES DE ESTILOS ---
-BG_BLACK = "#161717"
-BG_GRAY = "#363940"
-TXT_WHITE = "#fcf5eb"
+BG_BLACK = "#4f4f4f"
+BG_SECTION = "#383838"
+TXT_WHITE = "#a9a9a9"
+BORDER_BLACK = "#141414"
+BORDER_WHITE = "#696969"
+
+# --- CONSTANTES ---
+VERSION_LAUNCHER = "0.1"
