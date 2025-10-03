@@ -14,6 +14,8 @@ class MineManager:
         self._ensure_file()
         
         self.callback = {}
+        self.username = "test"
+        self.version = 0
     
     def _ensure_file(self):
         """
@@ -90,28 +92,14 @@ class MineManager:
         )
 
     async def play_minecraft(self, config):
-        with open(self.SRC_JSON, "r") as file:
-            data = json.load(file)
-        
-        if 'Nombre' in data and 'RAM' in data and 'Version' in data:
-            mine_user = data['Nombre']
-            ram = data['RAM']
-            version = data['Version']
-            java_ruta = data.get('Java', None)
-        
         options = {
-            'username': mine_user,
+            'username': config["user"],
             'uuid': '',
             'token': '',
-            'executablePath':f'{java_ruta}',
-
-            "jvmArguments": [
-                f"-Xmx{ram}G",
-                f"-Xms{ram}G",
-                ],  # The jvmArguments
+            
+            "launcherName": "infinn-launcher",
             "launcherVersion": VERSION_LAUNCHER,
-            "launcherName":"infinnn_laucher"
         }
 
-        minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(version, self.MINECRAFT_DIRECTORY, options)
+        minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(config["version"], self.MINECRAFT_DIRECTORY, options)
         subprocess.run(minecraft_command)

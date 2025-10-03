@@ -1,6 +1,7 @@
 import tkinter as tk
 import os
 import asyncio
+import threading
 
 from tkinter import ttk
 from src.config import WINDOW_WIDTH, WINDOW_HEIGHT, BG_BLACK, BG_GRAY, TXT_WHITE
@@ -112,7 +113,7 @@ class MainWindow:
         buttons_frame.grid_columnconfigure(0, weight=1, minsize=100) 
         buttons_frame.grid_columnconfigure(1, weight=1, minsize=100) 
 
-        download_button_btn = tk.Button(buttons_frame, text="Download", command=self._on_button_click, fg=TXT_WHITE, bg=BG_BLACK)
+        download_button_btn = tk.Button(buttons_frame, text="Download", command=self._on_download_button, fg=TXT_WHITE, bg=BG_BLACK)
         download_button_btn.grid(row=0, column=0, padx=5, pady=5, ipady=5, ipadx=5, sticky="nsew") 
 
         launch_button_btn = tk.Button(buttons_frame, text="Launch", command=self._on_play_button, fg=TXT_WHITE, bg=BG_BLACK)
@@ -154,17 +155,40 @@ class MainWindow:
             self.memory_entry.config(fg="white")
 
     def _on_play_button(self):
-        print(self.verision_cmbbx.get())
-        print(self.username_entry.get())
-        self.progressbar.step(50)
-        self.status_info.config(text="Starting", fg="yellow")
+        self.progressbar.step(100)
+        self.status_info.config(text="Starting", fg="green")
+
+        options = {
+            "user":self.username_entry.get(),
+            "version":self.verision_cmbbx.get().split(" ")[0]
+        }
+
+        print(options)
     
     def _on_download_button(self):
         version = self.verision_cmbbx.get().split(" ")[0]
         self.status_info.config(text="Downloading...", fg="yellow")
 
-        asyncio.create_task(self.mine.install_minecraft(version))
+        thread = threading.Thread(
+            target=self._start_installation_thread,
+            args=(version,),
+            daemon=True
+        )
+        thread.start()
     
+    def _start_installation_thread(self, version):
+        try:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            
+            loop.run_until_complete(self.mine.install_minecraft(version))
+            
+        except Exception as e:
+            print(f"Error en la instalación: {e}")
+            
+        finally:
+            loop.close()
+
     def set_status(self, text: str):
         self.status_info.config(text=text, fg="yellow")
         self.master.update_idletasks()
