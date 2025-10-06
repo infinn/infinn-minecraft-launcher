@@ -95,18 +95,22 @@ class MainWindow:
         status_frame.pack(pady=20, padx=20, ipady=20, ipadx=20, fill="x") 
 
         status_frame.grid_columnconfigure(0, weight=1, minsize=100) 
-        status_frame.grid_columnconfigure(1, weight=2, minsize=300) 
+        status_frame.grid_columnconfigure(1, weight=2, minsize=350) 
 
         # status
         status_lbl = tk.Label(status_frame, text="Status:", fg=TXT_WHITE, bg=BG_SECTION)
         status_lbl.grid(row=0, column=0, padx=5, pady=5, sticky="e") 
 
-        self.status_info = tk.Label(status_frame, text="Running", fg=TXT_WHITE, bg=BG_SECTION)
-        self.status_info.grid(row=0, column=1, padx=5, pady=5, sticky="nsew") 
+        self.status_info = tk.Label(status_frame, text="Waiting", fg=TXT_WHITE, bg=BG_SECTION)
+        self.status_info.grid(row=0, column=1, padx=5, pady=5, sticky="w") 
 
         self.progressbar = ttk.Progressbar(status_frame, orient=tk.HORIZONTAL, length=100)
         self.progressbar.grid(row=1, column=0, padx=5, pady=5, sticky="nsew", columnspan=2) 
 
+        # logs
+        self.logs_text = tk.Text(status_frame, height=5, state='disabled')
+        self.logs_text.grid(row=2, column=0, padx=5, pady=5, sticky="nsew", columnspan=2)
+        self.logs_text.config(fg=TXT_WHITE, bg=BG_BLACK)
 
 
         # --- Button section ---
@@ -147,6 +151,9 @@ class MainWindow:
         # path
         self.directory_user_lbl.insert(0, self.mine.MINECRAFT_DIRECTORY)
 
+        #logs
+        self._set_log("Welcome")
+
 
     def _on_button_click(self):
         print("test")
@@ -160,7 +167,8 @@ class MainWindow:
             self.memory_entry.config(fg="white")
 
     def _on_play_button(self):
-        self.status_info.config(text="Starting", fg="green")
+        self.status_info.config(text="Starting", fg="yellow")
+        self._set_log("Starting Minecraft", "title")
 
         username = self.username_entry.get()
         version = self.verision_cmbbx.get().split(" ")[0]
@@ -170,19 +178,27 @@ class MainWindow:
                 "user":self.username_entry.get(),
                 "version":self.verision_cmbbx.get().split(" ")[0]
             }
+            
+            self.progressbar.config(mode="indeterminate")
+            self.progressbar.start(10)
+            
             self.mine.play_minecraft(options)
-            self.progressbar.step(100)
 
         if not version:
-            tk.messagebox.showwarning(title="Error", message="No se ha ingresado la versión")
+            tk.messagebox.showwarning(title="Error", message="No se ha ingresado una versión")
+            self.verision_cmbbx.focus()
+            self._set_log("not version selected", "error")
             self.status_info.config(text="Error in version", fg="red")
         if not username:
             tk.messagebox.showwarning(title="Error", message="No se ha ingresado el username")
+            self.username_entry.focus()
+            self._set_log("not username", "error")
             self.status_info.config(text="Error in username", fg="red")
     
     def _on_download_button(self):
         version = self.verision_cmbbx.get().split(" ")[0]
         self.status_info.config(text="Downloading...", fg="yellow")
+        self._set_log("Start Download", "title")
 
         thread = threading.Thread(
             target=self._start_installation_thread,
@@ -192,6 +208,7 @@ class MainWindow:
         thread.start()
     
     def _start_installation_thread(self, version):
+        self._set_log("Start Installation")
         try:
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
@@ -199,13 +216,14 @@ class MainWindow:
             loop.run_until_complete(self.mine.install_minecraft(version))
             
         except Exception as e:
-            print(f"Error en la instalación: {e}")
+            self._set_log(e, "error")
             
         finally:
             loop.close()
 
     def set_status(self, text: str):
         self.status_info.config(text=text, fg="yellow")
+        self._set_log(text, "installing")
         self.master.update_idletasks()
 
     def set_progress(self, value: int):
@@ -226,8 +244,21 @@ class MainWindow:
         self.master.update_idletasks()
 
     def _on_directory_button(self):
+        self._set_log("Open folder", "title")
         folder_selected = filedialog.askdirectory()
 
-        self.mine.MINECRAFT_DIRECTORY = folder_selected
-        self.directory_user_lbl.delete(0, "end")
-        self.directory_user_lbl.insert(0, self.mine.MINECRAFT_DIRECTORY)
+        if folder_selected:
+            self.mine.MINECRAFT_DIRECTORY = folder_selected
+            self.directory_user_lbl.delete(0, "end")
+            self.directory_user_lbl.insert(0, self.mine.MINECRAFT_DIRECTORY)
+            self._set_log(f"folder set to: {folder_selected}")
+
+    def _set_log(self, text, type="info"):
+        if type == "title":
+            self.logs_text.configure(state='normal')
+            self.logs_text.insert("end", f"--- {text} --- \n")
+            self.logs_text.configure(state='disabled')
+        else:
+            self.logs_text.configure(state='normal')
+            self.logs_text.insert("end", f"[{type}] {text} \n")
+            self.logs_text.configure(state='disabled')

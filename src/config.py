@@ -1,7 +1,7 @@
 # --- CONSTANTES DE LA VENTANA ---
 WINDOW_TITLE = "Minecraft Launcher"
 WINDOW_WIDTH = 510
-WINDOW_HEIGHT = 670
+WINDOW_HEIGHT = 800
 
 # --- CONSTANTES DE RUTA ---
 DATA_FILE = "data/app_data.json"
