@@ -7,6 +7,7 @@ from tkinter import ttk
 from tkinter import filedialog
 from src.config import WINDOW_WIDTH, WINDOW_HEIGHT, BG_BLACK, BG_SECTION, TXT_WHITE, BORDER_BLACK, BORDER_WHITE, BTN_GRAY
 from src.utils import MineManager
+from src.components.settings_window import SettingsWindows
 
 
 USER_WINDOWS = os.environ['USERNAME']
@@ -67,24 +68,6 @@ class MainWindow:
         self.only_released_checkbtn = tk.Checkbutton(data_frame, text="released", fg=TXT_WHITE, bg=BG_SECTION, variable=self.only_released_var, command=self._update_version)
         self.only_released_checkbtn.grid(row=2, column=1, columnspan=2, sticky="w") 
 
-        # memory
-        memory_lbl = tk.Label(data_frame, text="Memory (Ram):", fg=TXT_WHITE, bg=BG_SECTION)
-        memory_lbl.grid(row=3, column=0, padx=5, pady=5, sticky="e") 
-
-        self.memory_entry = tk.Scale(data_frame, from_= 2, to= self.mine.get_user_ram()["total"], command=self._on_scale_move)
-        self.memory_entry.grid(row=3, column=1, padx=5, pady=5, sticky="nsew", columnspan=2) 
-        self.memory_entry.config(orient=tk.HORIZONTAL, fg=TXT_WHITE, bg=BG_BLACK, highlightthickness=0)
-        
-
-        # directory
-        directory_lbl = tk.Label(data_frame, text="Directory:", fg=TXT_WHITE, bg=BG_SECTION)
-        directory_lbl.grid(row=4, column=0, padx=5, pady=5, sticky="e") 
-
-        self.directory_user_lbl = tk.Entry(data_frame, fg=TXT_WHITE, bg=BG_BLACK)
-        self.directory_user_lbl.grid(row=4, column=1, padx=5, pady=5, sticky="nsew") 
-
-        self.directory_btn = tk.Button(data_frame, text="Search", command=self._on_directory_button, fg="white", bg=BTN_GRAY, highlightthickness=1.5, highlightbackground=BORDER_BLACK, borderwidth=1)
-        self.directory_btn.grid(row=4, column=2, padx=5, pady=5, ipady=5, ipadx=5, sticky="nsew") 
 
 
 
@@ -133,10 +116,14 @@ class MainWindow:
         version_app_lbl = tk.Label(self.master, text="MinecraftLauncher v0.1 (by Infinn)", fg=BG_SECTION, bg=BG_BLACK)
         version_app_lbl.pack()
 
+
+        settings_btn = tk.Button(buttons_frame, text="setting", command=self._on_setting_button, fg="white", bg=BTN_GRAY, highlightthickness=1.5, highlightbackground=BORDER_BLACK, borderwidth=1)
+        settings_btn.grid(row=1, column=0, padx=5, pady=5, ipady=5, ipadx=5, sticky="nsew") 
+
         # --- Set variable from save --- 
 
         # username
-        self.username_entry.insert(0, self.mine.username)
+        self.username_entry.insert(0, self.mine.configuration["username"])
         
         # version
         self.verision_cmbbx.config(values=self.mine.get_version())
@@ -145,26 +132,10 @@ class MainWindow:
         self.only_local_checkbtn.select()
         self.only_released_checkbtn.select()
         
-        # memory
-        self.memory_entry.set(4)
-
-        # path
-        self.directory_user_lbl.insert(0, self.mine.MINECRAFT_DIRECTORY)
 
         #logs
         self._set_log("Welcome")
 
-
-    def _on_button_click(self):
-        print("test")
-
-    def _on_scale_move(self, arg):
-        if int(arg) > int(self.mine.get_user_ram()["total"]) - 4:
-            self.memory_entry.config(fg="red")
-        elif int(arg) > int(self.mine.get_user_ram()["total"]) - 6:
-            self.memory_entry.config(fg="yellow")
-        else:
-            self.memory_entry.config(fg="white")
 
     def _on_play_button(self):
         self.status_info.config(text="Starting", fg="yellow")
@@ -243,16 +214,6 @@ class MainWindow:
         self.verision_cmbbx.config(values=new_version)
         self.master.update_idletasks()
 
-    def _on_directory_button(self):
-        self._set_log("Open folder", "title")
-        folder_selected = filedialog.askdirectory()
-
-        if folder_selected:
-            self.mine.MINECRAFT_DIRECTORY = folder_selected
-            self.directory_user_lbl.delete(0, "end")
-            self.directory_user_lbl.insert(0, self.mine.MINECRAFT_DIRECTORY)
-            self._set_log(f"folder set to: {folder_selected}")
-
     def _set_log(self, text, type="info"):
         if type == "title":
             self.logs_text.configure(state='normal')
@@ -262,3 +223,6 @@ class MainWindow:
             self.logs_text.configure(state='normal')
             self.logs_text.insert("end", f"[{type}] {text} \n")
             self.logs_text.configure(state='disabled')
+
+    def _on_setting_button(self):
+        SettingsWindows(self.master, self.mine)

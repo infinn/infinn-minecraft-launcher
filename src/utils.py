@@ -16,7 +16,6 @@ class MineManager:
         self._ensure_file()
         
         self.callback = {}
-        print(self.configuration)
     
     def _ensure_file(self):
         if not os.path.isfile(self.SRC_JSON):
