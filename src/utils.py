@@ -11,20 +11,43 @@ class MineManager:
         self.MINECRAFT_DIRECTORY = f"C://Users//{user}//AppData//Roaming//.minecraft"
         self.SRC_JSON = f"{self.MINECRAFT_DIRECTORY}//configuration.json"
 
+        self.configuration = {}
+
         self._ensure_file()
         
         self.callback = {}
-        self.username = "test"
-        self.version = 0
+        print(self.configuration)
     
     def _ensure_file(self):
-        """
-        if not os.path.exists(self.MINECRAFT_DIRECTORY):
-            os.makedirs(self.MINECRAFT_DIRECTORY)
-        """
         if not os.path.isfile(self.SRC_JSON):
-            with open(self.SRC_JSON, "w", encoding="utf-8") as f:
-                json.dump({}, f, indent=4)  # archivo JSON vacío
+            self._create_default_file()
+        else:
+            with open(self.SRC_JSON, "r", encoding="utf-8") as f:
+                try:
+                    self.configuration = json.load(f)
+                except json.JSONDecodeError:
+                    self._create_default_file()
+
+    def _create_default_file(self):
+        default_data = {
+            "username": "",
+            "uuid": "",
+            "token": "",
+
+            "executablePath": "java",
+            "defaultExecutablePath": "java",
+            "jvmArguments": [],
+            "launcherName": "infinn-launcher",
+            "launcherVersion": VERSION_LAUNCHER,
+            "gameDirectory": self.MINECRAFT_DIRECTORY,
+            "demo": False,
+            "customResolution": False,
+            "resolutionWidth": "854",
+            "resolutionHeight": "480"
+        }
+        with open(self.SRC_JSON, "w", encoding="utf-8") as f:
+            json.dump(default_data, f, indent=4, ensure_ascii=False)
+        self.configuration = default_data
     
     def get_version(self, only_local=True, only_released=True):
         local_version = []
