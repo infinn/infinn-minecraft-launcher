@@ -4,6 +4,7 @@ import asyncio
 import threading
 
 from tkinter import ttk
+from tkinter import filedialog
 from src.config import WINDOW_WIDTH, WINDOW_HEIGHT, BG_BLACK, BG_SECTION, TXT_WHITE, BORDER_BLACK, BORDER_WHITE, BTN_GRAY
 from src.utils import MineManager
 
@@ -42,13 +43,14 @@ class MainWindow:
 
         data_frame.grid_columnconfigure(0, weight=1, minsize=100) 
         data_frame.grid_columnconfigure(1, weight=2, minsize=300) 
+        data_frame.grid_columnconfigure(2, weight=3, minsize=50) 
         
         # username entry 
         username_lbl = tk.Label(data_frame, text="Username:", fg=TXT_WHITE, bg=BG_SECTION)
         username_lbl.grid(row=0, column=0, padx=5, pady=5, ipady=5, ipadx=5, sticky="e") 
 
         self.username_entry = tk.Entry(data_frame, fg=TXT_WHITE, bg=BG_BLACK)
-        self.username_entry.grid(row=0, column=1, padx=5, pady=5, sticky="nsew") 
+        self.username_entry.grid(row=0, column=1, padx=5, pady=5, sticky="nsew", columnspan=2) 
 
         # version 
         version_lbl = tk.Label(data_frame, text="Version:", fg=TXT_WHITE, bg=BG_SECTION, justify=tk.RIGHT)
@@ -70,7 +72,7 @@ class MainWindow:
         memory_lbl.grid(row=3, column=0, padx=5, pady=5, sticky="e") 
 
         self.memory_entry = tk.Scale(data_frame, from_= 2, to= self.mine.get_user_ram()["total"], command=self._on_scale_move)
-        self.memory_entry.grid(row=3, column=1, padx=5, pady=5, sticky="nsew") 
+        self.memory_entry.grid(row=3, column=1, padx=5, pady=5, sticky="nsew", columnspan=2) 
         self.memory_entry.config(orient=tk.HORIZONTAL, fg=TXT_WHITE, bg=BG_BLACK, highlightthickness=0)
         
 
@@ -80,6 +82,9 @@ class MainWindow:
 
         self.directory_user_lbl = tk.Entry(data_frame, fg=TXT_WHITE, bg=BG_BLACK)
         self.directory_user_lbl.grid(row=4, column=1, padx=5, pady=5, sticky="nsew") 
+
+        self.directory_btn = tk.Button(data_frame, text="Search", command=self._on_directory_button, fg="white", bg=BTN_GRAY, highlightthickness=1.5, highlightbackground=BORDER_BLACK, borderwidth=1)
+        self.directory_btn.grid(row=4, column=2, padx=5, pady=5, ipady=5, ipadx=5, sticky="nsew") 
 
 
 
@@ -219,3 +224,10 @@ class MainWindow:
 
         self.verision_cmbbx.config(values=new_version)
         self.master.update_idletasks()
+
+    def _on_directory_button(self):
+        folder_selected = filedialog.askdirectory()
+
+        self.mine.MINECRAFT_DIRECTORY = folder_selected
+        self.directory_user_lbl.delete(0, "end")
+        self.directory_user_lbl.insert(0, self.mine.MINECRAFT_DIRECTORY)
