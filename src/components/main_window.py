@@ -4,7 +4,7 @@ import asyncio
 import threading
 
 from tkinter import ttk
-from src.config import WINDOW_WIDTH, WINDOW_HEIGHT, BG_BLACK, BG_SECTION, TXT_WHITE, BORDER_BLACK, BORDER_WHITE
+from src.config import WINDOW_WIDTH, WINDOW_HEIGHT, BG_BLACK, BG_SECTION, TXT_WHITE, BORDER_BLACK, BORDER_WHITE, BTN_GRAY
 from src.utils import MineManager
 
 
@@ -36,7 +36,7 @@ class MainWindow:
 
         # --- User section ---
         data_frame = tk.Frame(self.master)
-        data_frame.configure(background=BG_SECTION)
+        data_frame.configure(background=BG_SECTION, highlightthickness=1.5, highlightbackground=BORDER_BLACK)
         
         data_frame.pack(pady=20, padx=20, ipady=20, ipadx=20, fill="x") 
 
@@ -45,38 +45,38 @@ class MainWindow:
         
         # username entry 
         username_lbl = tk.Label(data_frame, text="Username:", fg=TXT_WHITE, bg=BG_SECTION)
-        username_lbl.grid(row=0, column=0, padx=5, pady=5, ipady=5, ipadx=5, sticky="nsew") 
+        username_lbl.grid(row=0, column=0, padx=5, pady=5, ipady=5, ipadx=5, sticky="e") 
 
         self.username_entry = tk.Entry(data_frame, fg=TXT_WHITE, bg=BG_BLACK)
         self.username_entry.grid(row=0, column=1, padx=5, pady=5, sticky="nsew") 
 
         # version 
-        version_lbl = tk.Label(data_frame, text="Version:", fg=TXT_WHITE, bg=BG_SECTION)
-        version_lbl.grid(row=1, column=0, padx=5, pady=5, sticky="nsew") 
+        version_lbl = tk.Label(data_frame, text="Version:", fg=TXT_WHITE, bg=BG_SECTION, justify=tk.RIGHT)
+        version_lbl.grid(row=1, column=0, padx=5, pady=5, ipady=5, ipadx=5, sticky="e") 
         
         self.verision_cmbbx = ttk.Combobox(data_frame, state="readonly")
-        self.verision_cmbbx.grid(row=1, column=1, columnspan=2, pady=10) 
+        self.verision_cmbbx.grid(row=1, column=1, columnspan=2, pady=10, sticky="nsew") 
 
         self.only_local_var = tk.BooleanVar()
-        self.only_local_checkbtn = tk.Checkbutton(data_frame, text="local", variable=self.only_local_var, command=self._update_version)
-        self.only_local_checkbtn.grid(row=2, column=0, columnspan=2, pady=10) 
+        self.only_local_checkbtn = tk.Checkbutton(data_frame, text="local", bg=BG_SECTION, fg=TXT_WHITE, variable=self.only_local_var, command=self._update_version)
+        self.only_local_checkbtn.grid(row=2, column=0, columnspan=2) 
 
         self.only_released_var = tk.BooleanVar()
-        self.only_released_checkbtn = tk.Checkbutton(data_frame, text="released", variable=self.only_released_var, command=self._update_version)
-        self.only_released_checkbtn.grid(row=2, column=1, columnspan=2, pady=10) 
+        self.only_released_checkbtn = tk.Checkbutton(data_frame, text="released", fg=TXT_WHITE, bg=BG_SECTION, variable=self.only_released_var, command=self._update_version)
+        self.only_released_checkbtn.grid(row=2, column=1, columnspan=2, sticky="w") 
 
         # memory
         memory_lbl = tk.Label(data_frame, text="Memory (Ram):", fg=TXT_WHITE, bg=BG_SECTION)
-        memory_lbl.grid(row=3, column=0, padx=5, pady=5, sticky="nsew") 
+        memory_lbl.grid(row=3, column=0, padx=5, pady=5, sticky="e") 
 
         self.memory_entry = tk.Scale(data_frame, from_= 2, to= self.mine.get_user_ram()["total"], command=self._on_scale_move)
         self.memory_entry.grid(row=3, column=1, padx=5, pady=5, sticky="nsew") 
-        self.memory_entry.config(orient=tk.HORIZONTAL, fg=TXT_WHITE, bg=BG_SECTION, borderwidth=False)
+        self.memory_entry.config(orient=tk.HORIZONTAL, fg=TXT_WHITE, bg=BG_BLACK, highlightthickness=0)
         
 
         # directory
         directory_lbl = tk.Label(data_frame, text="Directory:", fg=TXT_WHITE, bg=BG_SECTION)
-        directory_lbl.grid(row=4, column=0, padx=5, pady=5, sticky="nsew") 
+        directory_lbl.grid(row=4, column=0, padx=5, pady=5, sticky="e") 
 
         self.directory_user_lbl = tk.Entry(data_frame, fg=TXT_WHITE, bg=BG_BLACK)
         self.directory_user_lbl.grid(row=4, column=1, padx=5, pady=5, sticky="nsew") 
@@ -85,7 +85,7 @@ class MainWindow:
 
         # --- Status section ---
         status_frame = tk.Frame(self.master)
-        status_frame.configure(background=BG_SECTION)
+        status_frame.configure(background=BG_SECTION, highlightthickness=1.5, highlightbackground=BORDER_BLACK)
 
         status_frame.pack(pady=20, padx=20, ipady=20, ipadx=20, fill="x") 
 
@@ -94,13 +94,13 @@ class MainWindow:
 
         # status
         status_lbl = tk.Label(status_frame, text="Status:", fg=TXT_WHITE, bg=BG_SECTION)
-        status_lbl.grid(row=0, column=0, padx=5, pady=5, sticky="nsew") 
+        status_lbl.grid(row=0, column=0, padx=5, pady=5, sticky="e") 
 
         self.status_info = tk.Label(status_frame, text="Running", fg=TXT_WHITE, bg=BG_SECTION)
         self.status_info.grid(row=0, column=1, padx=5, pady=5, sticky="nsew") 
 
         self.progressbar = ttk.Progressbar(status_frame, orient=tk.HORIZONTAL, length=100)
-        self.progressbar.grid(row=1, column=0, padx=5, pady=5, sticky="nsew") 
+        self.progressbar.grid(row=1, column=0, padx=5, pady=5, sticky="nsew", columnspan=2) 
 
 
 
@@ -113,10 +113,10 @@ class MainWindow:
         buttons_frame.grid_columnconfigure(0, weight=1, minsize=100) 
         buttons_frame.grid_columnconfigure(1, weight=1, minsize=100) 
 
-        download_button_btn = tk.Button(buttons_frame, text="Download", command=self._on_download_button, fg=TXT_WHITE, bg=BG_BLACK)
+        download_button_btn = tk.Button(buttons_frame, text="Download", command=self._on_download_button, fg="white", bg=BTN_GRAY, highlightthickness=1.5, highlightbackground=BORDER_BLACK, borderwidth=1)
         download_button_btn.grid(row=0, column=0, padx=5, pady=5, ipady=5, ipadx=5, sticky="nsew") 
 
-        launch_button_btn = tk.Button(buttons_frame, text="Launch", command=self._on_play_button, fg=TXT_WHITE, bg=BG_BLACK)
+        launch_button_btn = tk.Button(buttons_frame, text="Launch", command=self._on_play_button, fg="white", bg=BTN_GRAY, highlightthickness=1.5, highlightbackground=BORDER_BLACK,borderwidth=1)
         launch_button_btn.grid(row=0, column=1, padx=5, pady=5, ipady=5, ipadx=5, sticky="nsew") 
 
 
