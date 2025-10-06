@@ -91,7 +91,7 @@ class MineManager:
             }
         )
 
-    async def play_minecraft(self, config):
+    def play_minecraft(self, config):
         options = {
             'username': config["user"],
             'uuid': '',

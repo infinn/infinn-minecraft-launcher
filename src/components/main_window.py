@@ -155,15 +155,25 @@ class MainWindow:
             self.memory_entry.config(fg="white")
 
     def _on_play_button(self):
-        self.progressbar.step(100)
         self.status_info.config(text="Starting", fg="green")
 
-        options = {
-            "user":self.username_entry.get(),
-            "version":self.verision_cmbbx.get().split(" ")[0]
-        }
+        username = self.username_entry.get()
+        version = self.verision_cmbbx.get().split(" ")[0]
 
-        print(options)
+        if version and username:
+            options = {
+                "user":self.username_entry.get(),
+                "version":self.verision_cmbbx.get().split(" ")[0]
+            }
+            self.mine.play_minecraft(options)
+            self.progressbar.step(100)
+
+        if not version:
+            tk.messagebox.showwarning(title="Error", message="No se ha ingresado la versión")
+            self.status_info.config(text="Error in version", fg="red")
+        if not username:
+            tk.messagebox.showwarning(title="Error", message="No se ha ingresado el username")
+            self.status_info.config(text="Error in username", fg="red")
     
     def _on_download_button(self):
         version = self.verision_cmbbx.get().split(" ")[0]
