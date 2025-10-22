@@ -1,10 +1,9 @@
 import tkinter as tk
-import os
+import os, ctypes
 import asyncio
 import threading
 
 from tkinter import ttk
-from tkinter import filedialog
 from src.config import WINDOW_WIDTH, WINDOW_HEIGHT, BG_BLACK, BG_SECTION, TXT_WHITE, BORDER_BLACK, BORDER_WHITE, BTN_GRAY
 from src.utils import MineManager
 from src.components.settings_window import SettingsWindows
@@ -26,99 +25,100 @@ class MainWindow:
             "setProgress": self.set_progress,
             "setMax": self.set_max,
         }
+        
+        font_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../font/Minecraft.ttf"))
+        ctypes.windll.gdi32.AddFontResourceW(font_path)
 
         self._create_widgets()
 
         
 
     def _create_widgets(self):
-        app_name_lbl = tk.Label(self.master, text="Infinn Launcher", fg=TXT_WHITE, bg=BG_BLACK, font=("Arial", 30))
-        app_name_lbl.pack(pady=20)
+        base_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        image_path = os.path.join(base_path, "image", "mine_logo.png")
 
+        app_logo = tk.PhotoImage(file=image_path)
+        app_name_lbl = tk.Label(self.master, image=app_logo, bg=BG_BLACK)
+        app_name_lbl.image = app_logo
+        app_name_lbl.pack(pady=40)
 
         # --- User section ---
         data_frame = tk.Frame(self.master)
         data_frame.configure(background=BG_SECTION, highlightthickness=1.5, highlightbackground=BORDER_BLACK)
         
-        data_frame.pack(pady=20, padx=20, ipady=20, ipadx=20, fill="x") 
+        data_frame.pack(pady=5, padx=20, fill="x") 
 
         data_frame.grid_columnconfigure(0, weight=1, minsize=100) 
-        data_frame.grid_columnconfigure(1, weight=2, minsize=300) 
-        data_frame.grid_columnconfigure(2, weight=3, minsize=50) 
+        data_frame.grid_columnconfigure(1, weight=2, minsize=100) 
+        data_frame.grid_columnconfigure(2, weight=3, minsize=100) 
         
         # username entry 
-        username_lbl = tk.Label(data_frame, text="Username:", fg=TXT_WHITE, bg=BG_SECTION)
+        username_lbl = tk.Label(data_frame, text="Username:", fg=TXT_WHITE, bg=BG_SECTION, font=("Minecraft", 10))
         username_lbl.grid(row=0, column=0, padx=5, pady=5, ipady=5, ipadx=5, sticky="e") 
 
-        self.username_entry = tk.Entry(data_frame, fg=TXT_WHITE, bg=BG_BLACK)
+        self.username_entry = tk.Entry(data_frame, fg=TXT_WHITE, bg=BG_BLACK, font=("Minecraft", 10))
         self.username_entry.grid(row=0, column=1, padx=5, pady=5, sticky="nsew", columnspan=2) 
 
         # version 
-        version_lbl = tk.Label(data_frame, text="Version:", fg=TXT_WHITE, bg=BG_SECTION, justify=tk.RIGHT)
+        version_lbl = tk.Label(data_frame, text="Version:", fg=TXT_WHITE, bg=BG_SECTION, justify=tk.RIGHT, font=("Minecraft", 10))
         version_lbl.grid(row=1, column=0, padx=5, pady=5, ipady=5, ipadx=5, sticky="e") 
         
-        self.verision_cmbbx = ttk.Combobox(data_frame, state="readonly")
-        self.verision_cmbbx.grid(row=1, column=1, columnspan=2, pady=10, sticky="nsew") 
+        self.verision_cmbbx = ttk.Combobox(data_frame, state="readonly", font=("Minecraft", 10))
+        self.verision_cmbbx.grid(row=1, column=1, columnspan=2, padx=5, pady=10, sticky="nsew") 
 
         self.only_local_var = tk.BooleanVar()
-        self.only_local_checkbtn = tk.Checkbutton(data_frame, text="local", bg=BG_SECTION, fg=TXT_WHITE, variable=self.only_local_var, command=self._update_version)
-        self.only_local_checkbtn.grid(row=2, column=0, columnspan=2) 
+        self.only_local_checkbtn = tk.Checkbutton(data_frame, text="local", bg=BG_SECTION, fg=TXT_WHITE, variable=self.only_local_var, command=self._update_version, font=("Minecraft", 10))
+        self.only_local_checkbtn.grid(row=2, column=1, columnspan=1, sticky="w") 
 
         self.only_released_var = tk.BooleanVar()
-        self.only_released_checkbtn = tk.Checkbutton(data_frame, text="released", fg=TXT_WHITE, bg=BG_SECTION, variable=self.only_released_var, command=self._update_version)
-        self.only_released_checkbtn.grid(row=2, column=1, columnspan=2, sticky="w") 
-
-
-
-
-        # --- Status section ---
-        status_frame = tk.Frame(self.master)
-        status_frame.configure(background=BG_SECTION, highlightthickness=1.5, highlightbackground=BORDER_BLACK)
-
-        status_frame.pack(pady=20, padx=20, ipady=20, ipadx=20, fill="x") 
-
-        status_frame.grid_columnconfigure(0, weight=1, minsize=100) 
-        status_frame.grid_columnconfigure(1, weight=2, minsize=350) 
-
-        # status
-        status_lbl = tk.Label(status_frame, text="Status:", fg=TXT_WHITE, bg=BG_SECTION)
-        status_lbl.grid(row=0, column=0, padx=5, pady=5, sticky="e") 
-
-        self.status_info = tk.Label(status_frame, text="Waiting", fg=TXT_WHITE, bg=BG_SECTION)
-        self.status_info.grid(row=0, column=1, padx=5, pady=5, sticky="w") 
-
-        self.progressbar = ttk.Progressbar(status_frame, orient=tk.HORIZONTAL, length=100)
-        self.progressbar.grid(row=1, column=0, padx=5, pady=5, sticky="nsew", columnspan=2) 
-
-        # logs
-        self.logs_text = tk.Text(status_frame, height=5, state='disabled')
-        self.logs_text.grid(row=2, column=0, padx=5, pady=5, sticky="nsew", columnspan=2)
-        self.logs_text.config(fg=TXT_WHITE, bg=BG_BLACK)
+        self.only_released_checkbtn = tk.Checkbutton(data_frame, text="released", fg=TXT_WHITE, bg=BG_SECTION, variable=self.only_released_var, command=self._update_version, font=("Minecraft", 10))
+        self.only_released_checkbtn.grid(row=2, column=2, columnspan=1, sticky="w") 
 
 
         # --- Button section ---
         buttons_frame = tk.Frame(self.master)
         buttons_frame.configure(background=BG_BLACK)
 
-        buttons_frame.pack(pady=20, padx=20, fill="both", expand=True) 
+        buttons_frame.pack(pady=20, padx=20, fill="x") 
 
         buttons_frame.grid_columnconfigure(0, weight=1, minsize=100) 
         buttons_frame.grid_columnconfigure(1, weight=1, minsize=100) 
 
-        download_button_btn = tk.Button(buttons_frame, text="Download", command=self._on_download_button, fg="white", bg=BTN_GRAY, highlightthickness=1.5, highlightbackground=BORDER_BLACK, borderwidth=1)
+        download_button_btn = tk.Button(buttons_frame, text="Download", command=self._on_download_button, fg="white", bg=BTN_GRAY, highlightthickness=1.5, highlightbackground=BORDER_BLACK, borderwidth=1, font=("Minecraft", 10))
         download_button_btn.grid(row=0, column=0, padx=5, pady=5, ipady=5, ipadx=5, sticky="nsew") 
 
-        launch_button_btn = tk.Button(buttons_frame, text="Launch", command=self._on_play_button, fg="white", bg=BTN_GRAY, highlightthickness=1.5, highlightbackground=BORDER_BLACK,borderwidth=1)
+        launch_button_btn = tk.Button(buttons_frame, text="Launch", command=self._on_play_button, fg="white", bg=BTN_GRAY, highlightthickness=1.5, highlightbackground=BORDER_BLACK,borderwidth=1, font=("Minecraft", 10))
         launch_button_btn.grid(row=0, column=1, padx=5, pady=5, ipady=5, ipadx=5, sticky="nsew") 
 
+        # --- Status section ---
+        status_frame = tk.Frame(self.master)
+        status_frame.configure(background=BG_SECTION, highlightthickness=1.5, highlightbackground=BORDER_BLACK)
 
+        status_frame.pack(pady=5, padx=20, fill="x") 
 
-        version_app_lbl = tk.Label(self.master, text="MinecraftLauncher v0.1 (by Infinn)", fg=BG_SECTION, bg=BG_BLACK)
+        status_frame.grid_columnconfigure(0, weight=1, minsize=100) 
+        status_frame.grid_columnconfigure(1, weight=2, minsize=250) 
+
+        # status
+        status_lbl = tk.Label(status_frame, text="Status:", fg=TXT_WHITE, bg=BG_SECTION, font=("Minecraft", 10))
+        status_lbl.grid(row=0, column=0, padx=5, pady=5, sticky="e") 
+
+        self.status_info = tk.Label(status_frame, text="Waiting", fg=TXT_WHITE, bg=BG_SECTION, font=("Minecraft", 10))
+        self.status_info.grid(row=0, column=1, padx=5, pady=5, sticky="w") 
+
+        self.progressbar = ttk.Progressbar(status_frame, orient=tk.HORIZONTAL, length=100)
+        self.progressbar.grid(row=1, column=0, padx=5, pady=5, sticky="nsew", columnspan=2) 
+
+        # logs
+        self.logs_text = tk.Text(status_frame, height=5, state='disabled', font=("Minecraft", 10))
+        self.logs_text.grid(row=2, column=0, padx=5, pady=5, sticky="nsew", columnspan=2)
+        self.logs_text.config(fg=TXT_WHITE, bg=BG_BLACK)
+        
+        settings_btn = tk.Button(self.master, text="setting", command=self._on_setting_button, fg="white", bg=BTN_GRAY, highlightthickness=1.5, highlightbackground=BORDER_BLACK, borderwidth=1, font=("Minecraft", 10))
+        settings_btn.pack()
+
+        version_app_lbl = tk.Label(self.master, text="MinecraftLauncher v0.1 (by Infinn)", fg=BG_SECTION, bg=BG_BLACK, font=("Minecraft", 10))
         version_app_lbl.pack()
-
-
-        settings_btn = tk.Button(buttons_frame, text="setting", command=self._on_setting_button, fg="white", bg=BTN_GRAY, highlightthickness=1.5, highlightbackground=BORDER_BLACK, borderwidth=1)
-        settings_btn.grid(row=1, column=0, padx=5, pady=5, ipady=5, ipadx=5, sticky="nsew") 
 
         # --- Set variable from save --- 
 

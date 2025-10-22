@@ -27,13 +27,13 @@ class SettingsWindows:
         data_frame.grid_columnconfigure(2, weight=3, minsize=50) 
 
         # directory
-        directory_lbl = tk.Label(data_frame, text="Directory:", fg=TXT_WHITE, bg=BG_SECTION)
+        directory_lbl = tk.Label(data_frame, text="Directory:", fg=TXT_WHITE, bg=BG_SECTION, font=("Minecraft", 10))
         directory_lbl.grid(row=4, column=0, padx=5, pady=5, sticky="e") 
 
-        self.directory_user_lbl = tk.Entry(data_frame, fg=TXT_WHITE, bg=BG_BLACK)
+        self.directory_user_lbl = tk.Entry(data_frame, fg=TXT_WHITE, bg=BG_BLACK, font=("Minecraft", 10))
         self.directory_user_lbl.grid(row=4, column=1, padx=5, pady=5, sticky="nsew") 
 
-        self.directory_btn = tk.Button(data_frame, text="Search", command=self._on_directory_button, fg="white", bg=BTN_GRAY, highlightthickness=1.5, highlightbackground=BORDER_BLACK, borderwidth=1)
+        self.directory_btn = tk.Button(data_frame, text="Search", command=self._on_directory_button, fg="white", bg=BTN_GRAY, highlightthickness=1.5, highlightbackground=BORDER_BLACK, borderwidth=1, font=("Minecraft", 10))
         self.directory_btn.grid(row=4, column=2, padx=5, pady=5, ipady=5, ipadx=5, sticky="nsew") 
 
         # --- Button section ---
@@ -45,10 +45,10 @@ class SettingsWindows:
         buttons_frame.grid_columnconfigure(0, weight=1, minsize=100) 
         buttons_frame.grid_columnconfigure(1, weight=1, minsize=100) 
 
-        cancel_button_btn = tk.Button(buttons_frame, text="Cancel", command=self.setting_windows.destroy, fg="white", bg=BTN_GRAY, highlightthickness=1.5, highlightbackground=BORDER_BLACK, borderwidth=1)
+        cancel_button_btn = tk.Button(buttons_frame, text="Cancel", command=self.setting_windows.destroy, fg="white", bg=BTN_GRAY, highlightthickness=1.5, highlightbackground=BORDER_BLACK, borderwidth=1, font=("Minecraft", 10))
         cancel_button_btn.grid(row=0, column=0, padx=5, pady=5, ipady=5, ipadx=5, sticky="nsew") 
 
-        save_button_btn = tk.Button(buttons_frame, text="Save", command=self._on_save_button, fg="white", bg=BTN_GRAY, highlightthickness=1.5, highlightbackground=BORDER_BLACK,borderwidth=1)
+        save_button_btn = tk.Button(buttons_frame, text="Save", command=self._on_save_button, fg="white", bg=BTN_GRAY, highlightthickness=1.5, highlightbackground=BORDER_BLACK,borderwidth=1, font=("Minecraft", 10))
         save_button_btn.grid(row=0, column=1, padx=5, pady=5, ipady=5, ipadx=5, sticky="nsew") 
 
         # --- Set variable from save --- 
