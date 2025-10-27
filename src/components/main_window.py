@@ -249,7 +249,25 @@ class MainWindow:
         only_local = self.only_local_var.get()
         only_release = self.only_released_var.get()
 
-        new_version = self.mine.get_version(only_local, only_release)
+        new_version = []
+
+        if only_local:
+            version_source = self.VerUtils.getInstalledVersions()
+        else:
+            version_source = self.VerUtils.getVersionList()
+
+        if only_release:
+            filtered_versions = [
+                version for version in version_source 
+                if version.get('type') == 'release'
+        ]
+        else:
+            filtered_versions = version_source
+
+        new_version = [
+            f"{v['id']} ({v['type']})"
+            for v in filtered_versions
+        ]
 
         self.verision_cmbbx.config(values=new_version)
         self.master.update_idletasks()
@@ -277,5 +295,5 @@ class MainWindow:
             self.download_button_btn["state"] = "disabled"
             self.launch_button_btn["state"] = "normal"
         else:
-            self.download_button_btn["state"] = "enable"
-            self.launch_button_btn["state"] = "normal"
+            self.download_button_btn["state"] = "normal"
+            self.launch_button_btn["state"] = "disabled"
