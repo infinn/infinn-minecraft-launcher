@@ -184,3 +184,15 @@ def get_parse_version(versionList):
     for version in versionList:
         parse_list.append(version["id"] + f' ({version["type"]})')
     return(parse_list)
+
+def update_cache(minecraft_dir, latest_version_usage):
+    data = {
+        "minecraftDir": minecraft_dir,
+        "latestVersionUsage": latest_version_usage
+    }
+
+    try:
+        with open(Globals.cacheFile, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=4)
+    except Exception as e:
+            print("Error al guardar el cache:", e)

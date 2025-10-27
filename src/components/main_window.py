@@ -48,6 +48,7 @@ class MainWindow:
 
                 Globals.minecraftDir = data.get("minecraftDir", Globals.defaultMinecraftDir)
                 Globals.firstLaunch = False
+                Globals.latestVersionUsage = data.get("latestVersionUsage", Globals.defaultMinecraftDir)
 
             except Exception as e:
                 Globals.minecraftDir = Globals.defaultMinecraftDir
@@ -60,7 +61,8 @@ class MainWindow:
     
     def _save_cache(self, minecraft_dir):
         data = {
-            "minecraftDir": minecraft_dir
+            "minecraftDir": minecraft_dir,
+            "latestVersionUsage": ""
         }
 
         try:

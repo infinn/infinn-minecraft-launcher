@@ -9,3 +9,4 @@ class Globals:
     firstLaunch = True
     cacheFile = os.path.join(programDir, "cache.json")
     userConfiguration = {}
+    latestVersionUsage = ""
