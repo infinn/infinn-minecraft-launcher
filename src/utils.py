@@ -115,6 +115,8 @@ class MineManager:
         )
 
     def play_minecraft(self, config):
+        update_cache(Globals.minecraftDir, config["version"])
+
         options = {
             'username': config["user"],
             'uuid': '',

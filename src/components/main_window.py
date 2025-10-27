@@ -26,7 +26,6 @@ class MainWindow:
 
         self.VerUtils = VersionUtils()
 
-
         self.mine = MineManager(USER_WINDOWS)
 
         self.mine.callback = {
@@ -103,6 +102,7 @@ class MainWindow:
         
         self.verision_cmbbx = ttk.Combobox(data_frame, state="readonly", font=("Minecraft", 10))
         self.verision_cmbbx.grid(row=1, column=1, columnspan=2, padx=5, pady=10, sticky="nsew") 
+        self.verision_cmbbx.bind("<<ComboboxSelected>>", self._on_change_version)
 
         self.only_local_var = tk.BooleanVar()
         self.only_local_checkbtn = tk.Checkbutton(data_frame, text="local", bg=BG_SECTION, fg=TXT_WHITE, variable=self.only_local_var, command=self._update_version, font=("Minecraft", 10))
@@ -122,11 +122,11 @@ class MainWindow:
         buttons_frame.grid_columnconfigure(0, weight=1, minsize=100) 
         buttons_frame.grid_columnconfigure(1, weight=1, minsize=100) 
 
-        download_button_btn = tk.Button(buttons_frame, text="Download", command=self._on_download_button, fg="white", bg=BTN_GRAY, highlightthickness=1.5, highlightbackground=BORDER_BLACK, borderwidth=1, font=("Minecraft", 10))
-        download_button_btn.grid(row=0, column=0, padx=5, pady=5, ipady=5, ipadx=5, sticky="nsew") 
+        self.download_button_btn = tk.Button(buttons_frame, text="Download", command=self._on_download_button, fg="white", bg=BTN_GRAY, highlightthickness=1.5, highlightbackground=BORDER_BLACK, borderwidth=1, font=("Minecraft", 10))
+        self.download_button_btn.grid(row=0, column=0, padx=5, pady=5, ipady=5, ipadx=5, sticky="nsew") 
 
-        launch_button_btn = tk.Button(buttons_frame, text="Launch", command=self._on_play_button, fg="white", bg=BTN_GRAY, highlightthickness=1.5, highlightbackground=BORDER_BLACK,borderwidth=1, font=("Minecraft", 10))
-        launch_button_btn.grid(row=0, column=1, padx=5, pady=5, ipady=5, ipadx=5, sticky="nsew") 
+        self.launch_button_btn = tk.Button(buttons_frame, text="Launch", command=self._on_play_button, fg="white", bg=BTN_GRAY, highlightthickness=1.5, highlightbackground=BORDER_BLACK,borderwidth=1, font=("Minecraft", 10))
+        self.launch_button_btn.grid(row=0, column=1, padx=5, pady=5, ipady=5, ipadx=5, sticky="nsew") 
 
         # --- Status section ---
         status_frame = tk.Frame(self.master)
@@ -164,7 +164,9 @@ class MainWindow:
         self.username_entry.insert(0, self.mine.configuration["username"])
         
         # version
-        self.verision_cmbbx.config(values=get_parse_version(self.VerUtils.getInstalledVersions()))
+        version_list = get_parse_version(self.VerUtils.getInstalledVersions())
+
+        self.verision_cmbbx.config(values=version_list)
         self.verision_cmbbx.current(0)
 
         self.only_local_checkbtn.select()
@@ -264,3 +266,16 @@ class MainWindow:
 
     def _on_setting_button(self):
         SettingsWindows(self.master, self.mine)
+
+    def _on_change_version(self, event):
+        version_select = self.verision_cmbbx.get().split(" ")[0]
+        version_download = self.VerUtils.getInstalledVersions()
+
+        is_download = any(v['id'] == version_select for v in version_download)
+
+        if is_download:
+            self.download_button_btn["state"] = "disabled"
+            self.launch_button_btn["state"] = "normal"
+        else:
+            self.download_button_btn["state"] = "enable"
+            self.launch_button_btn["state"] = "normal"
