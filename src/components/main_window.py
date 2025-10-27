@@ -26,6 +26,9 @@ class MainWindow:
 
         self.VerUtils = VersionUtils()
 
+        self.is_download_btn = False
+        self.is_play_btn = False
+
         self.mine = MineManager(USER_WINDOWS)
 
         self.mine.callback = {
@@ -122,11 +125,8 @@ class MainWindow:
         buttons_frame.grid_columnconfigure(0, weight=1, minsize=100) 
         buttons_frame.grid_columnconfigure(1, weight=1, minsize=100) 
 
-        self.download_button_btn = tk.Button(buttons_frame, text="Download", command=self._on_download_button, fg="white", bg=BTN_GRAY, highlightthickness=1.5, highlightbackground=BORDER_BLACK, borderwidth=1, font=("Minecraft", 10))
-        self.download_button_btn.grid(row=0, column=0, padx=5, pady=5, ipady=5, ipadx=5, sticky="nsew") 
-
-        self.launch_button_btn = tk.Button(buttons_frame, text="Launch", command=self._on_play_button, fg="white", bg=BTN_GRAY, highlightthickness=1.5, highlightbackground=BORDER_BLACK,borderwidth=1, font=("Minecraft", 10))
-        self.launch_button_btn.grid(row=0, column=1, padx=5, pady=5, ipady=5, ipadx=5, sticky="nsew") 
+        self.play_btn = tk.Button(buttons_frame, text="Play", command=self._on_main_button, fg="white", bg=BTN_GRAY, highlightthickness=1.5, highlightbackground=BORDER_BLACK, borderwidth=1, font=("Minecraft", 10))
+        self.play_btn.grid(row=0, column=0, padx=5, pady=5, ipady=5, ipadx=5, sticky="nsew", columnspan=2) 
 
         # --- Status section ---
         status_frame = tk.Frame(self.master)
@@ -273,6 +273,8 @@ class MainWindow:
         ]
 
         self.verision_cmbbx.config(values=new_version)
+        self.verision_cmbbx.current(0)
+        self._on_change_version("test")
         self.master.update_idletasks()
 
     def _set_log(self, text, type="info"):
@@ -295,8 +297,21 @@ class MainWindow:
         is_download = any(v['id'] == version_select for v in version_download)
 
         if is_download:
-            self.download_button_btn["state"] = "disabled"
-            self.launch_button_btn["state"] = "normal"
+            self.play_btn.config(text="Play")
+            self.is_download_btn = False
+            self.is_play_btn = True
         else:
-            self.download_button_btn["state"] = "normal"
-            self.launch_button_btn["state"] = "disabled"
+            self.play_btn.config(text="Download")
+            self.is_download_btn = True
+            self.is_play_btn = False
+
+    def _on_main_button(self):
+
+        if self.is_play_btn:
+            self._on_play_button()
+
+        elif self.is_download_btn:
+            self._on_download_button()
+
+        else:
+            self._set_log("Error in play")
