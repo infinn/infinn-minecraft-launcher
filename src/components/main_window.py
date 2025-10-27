@@ -6,7 +6,7 @@ import json
 
 from tkinter import ttk
 from src.config import WINDOW_WIDTH, WINDOW_HEIGHT, BG_BLACK, BG_SECTION, TXT_WHITE, BORDER_BLACK, BORDER_WHITE, BTN_GRAY
-from src.utils import MineManager, load_configuration, get_parse_version
+from src.utils import MineManager, load_configuration, get_parse_version, play_minecraft
 from src.components.settings_window import SettingsWindows
 from src.Globals import Globals
 from src.core.version_collection import VersionUtils
@@ -178,6 +178,7 @@ class MainWindow:
 
 
     def _on_play_button(self):
+        self.launch_button_btn["state"] = "disabled"
         self.status_info.config(text="Starting", fg="yellow")
         self._set_log("Starting Minecraft", "title")
 
@@ -193,18 +194,20 @@ class MainWindow:
             self.progressbar.config(mode="indeterminate")
             self.progressbar.start(10)
             
-            self.mine.play_minecraft(options)
+            play_minecraft(options)
 
         if not version:
             tk.messagebox.showwarning(title="Error", message="No se ha ingresado una versión")
             self.verision_cmbbx.focus()
             self._set_log("not version selected", "error")
             self.status_info.config(text="Error in version", fg="red")
+            self.launch_button_btn["state"] = "normal"
         if not username:
             tk.messagebox.showwarning(title="Error", message="No se ha ingresado el username")
             self.username_entry.focus()
             self._set_log("not username", "error")
             self.status_info.config(text="Error in username", fg="red")
+            self.launch_button_btn["state"] = "normal"
     
     def _on_download_button(self):
         version = self.verision_cmbbx.get().split(" ")[0]

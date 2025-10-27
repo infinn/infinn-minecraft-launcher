@@ -83,21 +83,6 @@ class MineManager:
             }
         )
 
-    def play_minecraft(self, config):
-        update_cache(Globals.minecraftDir, config["version"])
-
-        options = {
-            'username': config["user"],
-            'uuid': '',
-            'token': '',
-            
-            "launcherName": "infinn-launcher",
-            "launcherVersion": VERSION_LAUNCHER,
-        }
-
-        minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(config["version"], self.MINECRAFT_DIRECTORY, options)
-        subprocess.run(minecraft_command)
-
 def load_configuration():
     _ensureMinecraftDirectoryExists()
     _ensure_configuration_file()
@@ -167,3 +152,18 @@ def update_cache(minecraft_dir, latest_version_usage):
                 json.dump(data, f, indent=4)
     except Exception as e:
             print("Error al guardar el cache:", e)
+
+def play_minecraft(config):
+        update_cache(Globals.minecraftDir, config["version"])
+
+        options = {
+            'username': config["user"],
+            'uuid': '',
+            'token': '',
+            
+            "launcherName": "infinn-launcher",
+            "launcherVersion": VERSION_LAUNCHER,
+        }
+
+        minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(config["version"], Globals.minecraftDir, options)
+        subprocess.run(minecraft_command)
