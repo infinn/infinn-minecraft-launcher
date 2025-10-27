@@ -2,6 +2,7 @@ import json
 import os
 import minecraft_launcher_lib
 import subprocess
+import socket
 
 from src.config import VERSION_LAUNCHER
 from src.Globals import Globals
@@ -73,15 +74,16 @@ class MineManager:
         self.SRC_JSON = f"{self.MINECRAFT_DIRECTORY}//configuration.json"
 
     async def install_minecraft(self, version):
-        minecraft_launcher_lib.install.install_minecraft_version(
-            version,
-            self.MINECRAFT_DIRECTORY,
-            callback={
-                "setStatus": self.callback["setStatus"],
-                "setProgress": self.callback["setProgress"],
-                "setMax": self.callback["setMax"],
-            }
-        )
+        if hasInternetConnection():
+            minecraft_launcher_lib.install.install_minecraft_version(
+                version,
+                self.MINECRAFT_DIRECTORY,
+                callback={
+                    "setStatus": self.callback["setStatus"],
+                    "setProgress": self.callback["setProgress"],
+                    "setMax": self.callback["setMax"],
+                }
+            )
 
 def load_configuration():
     _ensureMinecraftDirectoryExists()
@@ -90,38 +92,38 @@ def load_configuration():
     pass
 
 def _ensure_configuration_file():
-        json_path = f"{Globals.minecraftDir}//configuration.json"
+    json_path = f"{Globals.minecraftDir}//configuration.json"
 
-        if not os.path.isfile(json_path):
-            _create_default_file()
-        else:
-            with open(json_path, "r", encoding="utf-8") as f:
-                try:
-                    Globals.userConfiguration = json.load(f)
-                except json.JSONDecodeError:
-                    _create_default_file()
+    if not os.path.isfile(json_path):
+        _create_default_file()
+    else:
+        with open(json_path, "r", encoding="utf-8") as f:
+            try:
+                Globals.userConfiguration = json.load(f)
+            except json.JSONDecodeError:
+                _create_default_file()
 
 
 def _create_default_file():
-        json_path = f"{Globals.minecraftDir}//configuration.json"
-        default_data = {
-            "username": "",
-            "uuid": "",
-            "token": "",
+    json_path = f"{Globals.minecraftDir}//configuration.json"
+    default_data = {
+        "username": "",
+        "uuid": "",
+        "token": "",
 
-            "executablePath": "java",
-            "defaultExecutablePath": "java",
-            "jvmArguments": [],
-            "launcherName": "infinn-launcher",
-            "launcherVersion": VERSION_LAUNCHER,
-            "gameDirectory": Globals.minecraftDir,
-            "demo": False,
-            "customResolution": False,
-            "resolutionWidth": "854",
-            "resolutionHeight": "480"
-        }
-        with open(json_path, "w", encoding="utf-8") as f:
-            json.dump(default_data, f, indent=4, ensure_ascii=False)
+        "executablePath": "java",
+        "defaultExecutablePath": "java",
+        "jvmArguments": [],
+        "launcherName": "infinn-launcher",
+        "launcherVersion": VERSION_LAUNCHER,
+        "gameDirectory": Globals.minecraftDir,
+        "demo": False,
+        "customResolution": False,
+        "resolutionWidth": "854",
+        "resolutionHeight": "480"
+    }
+    with open(json_path, "w", encoding="utf-8") as f:
+        json.dump(default_data, f, indent=4, ensure_ascii=False)
 
 def _ensureMinecraftDirectoryExists():
 
@@ -154,16 +156,24 @@ def update_cache(minecraft_dir, latest_version_usage):
             print("Error al guardar el cache:", e)
 
 def play_minecraft(config):
-        update_cache(Globals.minecraftDir, config["version"])
+    update_cache(Globals.minecraftDir, config["version"])
 
-        options = {
-            'username': config["user"],
-            'uuid': '',
-            'token': '',
+    options = {
+        'username': config["user"],
+        'uuid': '',
+        'token': '',
             
-            "launcherName": "infinn-launcher",
-            "launcherVersion": VERSION_LAUNCHER,
-        }
+        "launcherName": "infinn-launcher",
+        "launcherVersion": VERSION_LAUNCHER,
+    }
 
-        minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(config["version"], Globals.minecraftDir, options)
-        subprocess.run(minecraft_command)
+    minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(config["version"], Globals.minecraftDir, options)
+    subprocess.run(minecraft_command)
+
+def hasInternetConnection():
+    try:
+        socket.create_connection(("api.mojang.com", 80))
+        return True
+    except OSError:
+        return False
+    
