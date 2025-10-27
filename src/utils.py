@@ -2,7 +2,6 @@ import json
 import os
 import minecraft_launcher_lib
 import subprocess
-import ctypes
 
 from src.config import VERSION_LAUNCHER
 from src.Globals import Globals
@@ -73,36 +72,6 @@ class MineManager:
         self.MINECRAFT_DIRECTORY = path
         self.SRC_JSON = f"{self.MINECRAFT_DIRECTORY}//configuration.json"
 
-    def get_user_ram(self):
-        class MEMORYSTATUSEX(ctypes.Structure):
-            _fields_ = [
-                ("dwLength", ctypes.c_ulong),
-                ("dwMemoryLoad", ctypes.c_ulong),
-                ("ullTotalPhys", ctypes.c_ulonglong),
-                ("ullAvailPhys", ctypes.c_ulonglong),
-                ("ullTotalPageFile", ctypes.c_ulonglong),
-                ("ullAvailPageFile", ctypes.c_ulonglong),
-                ("ullTotalVirtual", ctypes.c_ulonglong),
-                ("ullAvailVirtual", ctypes.c_ulonglong),
-                ("sullAvailExtendedVirtual", ctypes.c_ulonglong),
-            ]
-
-        stat = MEMORYSTATUSEX()
-        stat.dwLength = ctypes.sizeof(MEMORYSTATUSEX)
-
-        ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(stat))
-
-        total_gb = stat.ullTotalPhys / (1024**3)
-        disponible_gb = stat.ullAvailPhys / (1024**3)
-        usado_gb = total_gb - disponible_gb
-
-        return {
-            "total": round(total_gb, 2),
-            "disponible": round(disponible_gb, 2),
-            "usado": round(usado_gb, 2),
-            "porcentaje": stat.dwMemoryLoad
-        }
-    
     async def install_minecraft(self, version):
         minecraft_launcher_lib.install.install_minecraft_version(
             version,
