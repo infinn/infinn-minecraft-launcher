@@ -6,7 +6,7 @@ import json
 
 from tkinter import ttk
 from src.config import WINDOW_WIDTH, WINDOW_HEIGHT, BG_BLACK, BG_SECTION, TXT_WHITE, BORDER_BLACK, BORDER_WHITE, BTN_GRAY
-from src.utils import MineManager, load_configuration, get_parse_version, play_minecraft
+from src.utils import MineManager, load_configuration, get_parse_version, play_minecraft, hasInternetConnection
 from src.components.settings_window import SettingsWindows
 from src.Globals import Globals
 from src.core.version_collection import VersionUtils
@@ -224,12 +224,19 @@ class MainWindow:
         self.status_info.config(text="Downloading...", fg="yellow")
         self._set_log("Start Download", "title")
 
-        thread = threading.Thread(
-            target=self._start_installation_thread,
-            args=(version,),
-            daemon=True
-        )
-        thread.start()
+        has_internet = hasInternetConnection()
+
+        if has_internet:
+
+            thread = threading.Thread(
+                target=self._start_installation_thread,
+                args=(version,),
+                daemon=True
+            )
+            thread.start()
+        else:
+            self.status_info.config(text="Error", fg="red")
+            self._set_log("No connection to mojang", "error")
     
     def _start_installation_thread(self, version):
         self._set_log("Start Installation")

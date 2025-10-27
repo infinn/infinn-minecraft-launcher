@@ -74,16 +74,15 @@ class MineManager:
         self.SRC_JSON = f"{self.MINECRAFT_DIRECTORY}//configuration.json"
 
     async def install_minecraft(self, version):
-        if hasInternetConnection():
-            minecraft_launcher_lib.install.install_minecraft_version(
-                version,
-                self.MINECRAFT_DIRECTORY,
-                callback={
-                    "setStatus": self.callback["setStatus"],
-                    "setProgress": self.callback["setProgress"],
-                    "setMax": self.callback["setMax"],
-                }
-            )
+        minecraft_launcher_lib.install.install_minecraft_version(
+            version,
+            self.MINECRAFT_DIRECTORY,
+            callback={
+                "setStatus": self.callback["setStatus"],
+                "setProgress": self.callback["setProgress"],
+                "setMax": self.callback["setMax"],
+            }
+        )
 
 def load_configuration():
     _ensureMinecraftDirectoryExists()
