@@ -162,7 +162,7 @@ class MainWindow:
         self.username_entry.insert(0, self.mine.configuration["username"])
         
         # version
-        self.verision_cmbbx.config(values=self.VerUtils.getInstalledVersions())
+        self.verision_cmbbx.config(values=self._get_parse_version(self.VerUtils.getInstalledVersions()))
         self.verision_cmbbx.current(0)
 
         self.only_local_checkbtn.select()
@@ -262,3 +262,9 @@ class MainWindow:
 
     def _on_setting_button(self):
         SettingsWindows(self.master, self.mine)
+
+    def _get_parse_version(self, versionList):
+        parse_list = []
+        for version in versionList:
+            parse_list.append(version["id"] + f' ({version["type"]})')
+        return(parse_list)
