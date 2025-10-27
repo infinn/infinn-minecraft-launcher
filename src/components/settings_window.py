@@ -13,6 +13,8 @@ class SettingsWindows:
 
         self.mine = mine_manager
 
+        self.new_directory = ""
+
         self._create_widgets()
         
     
@@ -58,7 +60,8 @@ class SettingsWindows:
 
 
     def _on_save_button(self):
-        print("saved")
+        self.mine.set_minecrat_directory(self.new_directory)
+        self.setting_windows.destroy()
     
     def _on_directory_button(self):
         folder_selected = filedialog.askdirectory()
@@ -66,3 +69,5 @@ class SettingsWindows:
         if folder_selected:
             self.directory_user_lbl.delete(0, "end")
             self.directory_user_lbl.insert(0, folder_selected)
+
+            self.new_directory = folder_selected

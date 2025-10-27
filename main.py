@@ -9,7 +9,6 @@ if __name__ == "__main__":
 
     root.resizable(False, False)
     root.configure(bg=BG_BLACK)
-    root.iconbitmap('./logo.ico') 
 
     app = MainWindow(root)
 

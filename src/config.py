@@ -15,4 +15,9 @@ BORDER_WHITE = "#696969"
 BTN_GRAY = "#6e6e6e"
 
 # --- CONSTANTES ---
-VERSION_LAUNCHER = "0.1"
+VERSION_LAUNCHER = "alpha 0.1"
+
+# --- GLOBALS ---
+programDir = ""
+minecraftDir = ""
+defaultMinecraftDir = ""
