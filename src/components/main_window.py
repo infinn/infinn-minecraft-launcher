@@ -164,14 +164,24 @@ class MainWindow:
         self.username_entry.insert(0, self.mine.configuration["username"])
         
         # version
-        version_list = get_parse_version(self.VerUtils.getInstalledVersions())
-
-        self.verision_cmbbx.config(values=version_list)
-        self.verision_cmbbx.current(0)
-
         self.only_local_checkbtn.select()
-        self.only_released_checkbtn.select()
+        version_list = self.VerUtils.getInstalledVersions()
+
+        if not version_list:
+            version_list = self.VerUtils.getVersionList()
+            self.only_local_checkbtn.deselect()
         
+        current_version = 0
+
+        for i, version in enumerate(version_list):
+            if version.get('id') == Globals.latestVersionUsage:
+                current_version = i
+                break  
+
+        self.verision_cmbbx.config(values=get_parse_version(version_list))
+        self.verision_cmbbx.current(current_version)
+        
+        self._on_change_version("play")
 
         #logs
         self._set_log("Welcome")
@@ -312,6 +322,3 @@ class MainWindow:
 
         elif self.is_download_btn:
             self._on_download_button()
-
-        else:
-            self._set_log("Error in play")
