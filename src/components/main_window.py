@@ -6,7 +6,7 @@ import json
 
 from tkinter import ttk
 from src.config import WINDOW_WIDTH, WINDOW_HEIGHT, BG_BLACK, BG_SECTION, TXT_WHITE, BORDER_BLACK, BORDER_WHITE, BTN_GRAY
-from src.utils import MineManager, load_configuration
+from src.utils import MineManager, load_configuration, get_parse_version
 from src.components.settings_window import SettingsWindows
 from src.Globals import Globals
 from src.core.version_collection import VersionUtils
@@ -162,7 +162,7 @@ class MainWindow:
         self.username_entry.insert(0, self.mine.configuration["username"])
         
         # version
-        self.verision_cmbbx.config(values=self._get_parse_version(self.VerUtils.getInstalledVersions()))
+        self.verision_cmbbx.config(values=get_parse_version(self.VerUtils.getInstalledVersions()))
         self.verision_cmbbx.current(0)
 
         self.only_local_checkbtn.select()
@@ -262,9 +262,3 @@ class MainWindow:
 
     def _on_setting_button(self):
         SettingsWindows(self.master, self.mine)
-
-    def _get_parse_version(self, versionList):
-        parse_list = []
-        for version in versionList:
-            parse_list.append(version["id"] + f' ({version["type"]})')
-        return(parse_list)

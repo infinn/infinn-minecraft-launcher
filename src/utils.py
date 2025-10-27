@@ -178,3 +178,9 @@ def _ensureMinecraftDirectoryExists():
     except Exception:
         Globals.minecraftDir = Globals.defaultMinecraftDir
         _ensureMinecraftDirectoryExists()
+
+def get_parse_version(versionList):
+    parse_list = []
+    for version in versionList:
+        parse_list.append(version["id"] + f' ({version["type"]})')
+    return(parse_list)
