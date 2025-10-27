@@ -2,11 +2,14 @@ import tkinter as tk
 import os, ctypes
 import asyncio
 import threading
+import json
 
 from tkinter import ttk
 from src.config import WINDOW_WIDTH, WINDOW_HEIGHT, BG_BLACK, BG_SECTION, TXT_WHITE, BORDER_BLACK, BORDER_WHITE, BTN_GRAY
-from src.utils import MineManager
+from src.utils import MineManager, load_configuration
 from src.components.settings_window import SettingsWindows
+from src.Globals import Globals
+from src.core.version_collection import VersionUtils
 
 
 USER_WINDOWS = os.environ['USERNAME']
@@ -17,6 +20,12 @@ class MainWindow:
         
         master.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
         master.configure(background=BG_BLACK)
+
+        self._init_configurtation()
+        load_configuration()
+
+        self.VerUtils = VersionUtils()
+
 
         self.mine = MineManager(USER_WINDOWS)
 
@@ -31,7 +40,34 @@ class MainWindow:
 
         self._create_widgets()
 
-        
+    def _init_configurtation(self):
+        if os.path.isfile(Globals.cacheFile):
+            try:
+                with open(Globals.cacheFile, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+
+                Globals.minecraftDir = data.get("minecraftDir", Globals.defaultMinecraftDir)
+                Globals.firstLaunch = False
+
+            except Exception as e:
+                Globals.minecraftDir = Globals.defaultMinecraftDir
+
+        else:
+            Globals.minecraftDir = Globals.defaultMinecraftDir
+            Globals.firstLaunch = True
+
+            self._save_cache(Globals.minecraftDir)
+    
+    def _save_cache(self, minecraft_dir):
+        data = {
+            "minecraftDir": minecraft_dir
+        }
+
+        try:
+            with open(Globals.cacheFile, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=4)
+        except Exception as e:
+            print("Error al guardar el cache:", e)
 
     def _create_widgets(self):
         base_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
@@ -126,7 +162,7 @@ class MainWindow:
         self.username_entry.insert(0, self.mine.configuration["username"])
         
         # version
-        self.verision_cmbbx.config(values=self.mine.get_version())
+        self.verision_cmbbx.config(values=self.VerUtils.getInstalledVersions())
         self.verision_cmbbx.current(0)
 
         self.only_local_checkbtn.select()

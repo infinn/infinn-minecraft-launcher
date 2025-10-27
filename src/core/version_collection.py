@@ -2,7 +2,7 @@ import requests
 import json
 import os
 
-from src.config import minecraftDir
+from src.Globals import Globals
 
 
 class VersionUtils:
@@ -15,8 +15,8 @@ class VersionUtils:
         self._latestSnapshot = ""
         self._latestRelease = ""
 
-        self._loadVanillaVersions()
-        self.updateVersions()
+        self._load_vanilla_version()
+        self.updateVersion()
 
     def _load_vanilla_version(self):
         _version_data = requests.get("https://launchermeta.mojang.com/mc/game/version_manifest_v2.json").json()
@@ -39,13 +39,13 @@ class VersionUtils:
             _versions[key] = value
 
         # check version files 
-        if not os.path.isdir(os.path.join(minecraftDir, "versions")):
+        if not os.path.isdir(os.path.join(Globals.minecraftDir, "versions")):
             self._versions = _versions
             return
         
         # check versions
-        for currentVersion in os.listdir(os.path.join(minecraftDir, "versions")):
-            jsonPath = os.path.join(minecraftDir, "versions", currentVersion, f"{currentVersion}.json")
+        for currentVersion in os.listdir(os.path.join(Globals.minecraftDir, "versions")):
+            jsonPath = os.path.join(Globals.minecraftDir, "versions", currentVersion, f"{currentVersion}.json")
 
             if not os.path.isfile(jsonPath):
                 continue

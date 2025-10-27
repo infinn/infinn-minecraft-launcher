@@ -20,3 +20,5 @@ main.spec
 
 build/*
 dist/*
+
+src/cache.json

@@ -5,6 +5,7 @@ import subprocess
 import ctypes
 
 from src.config import VERSION_LAUNCHER
+from src.Globals import Globals
 
 class MineManager:
     def __init__(self, user):
@@ -125,3 +126,55 @@ class MineManager:
 
         minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(config["version"], self.MINECRAFT_DIRECTORY, options)
         subprocess.run(minecraft_command)
+
+def load_configuration():
+    _ensureMinecraftDirectoryExists()
+    _ensure_configuration_file()
+
+    pass
+
+def _ensure_configuration_file():
+        json_path = f"{Globals.minecraftDir}//configuration.json"
+
+        if not os.path.isfile(json_path):
+            _create_default_file()
+        else:
+            with open(json_path, "r", encoding="utf-8") as f:
+                try:
+                    Globals.userConfiguration = json.load(f)
+                except json.JSONDecodeError:
+                    _create_default_file()
+
+
+def _create_default_file():
+        json_path = f"{Globals.minecraftDir}//configuration.json"
+        default_data = {
+            "username": "",
+            "uuid": "",
+            "token": "",
+
+            "executablePath": "java",
+            "defaultExecutablePath": "java",
+            "jvmArguments": [],
+            "launcherName": "infinn-launcher",
+            "launcherVersion": VERSION_LAUNCHER,
+            "gameDirectory": Globals.minecraftDir,
+            "demo": False,
+            "customResolution": False,
+            "resolutionWidth": "854",
+            "resolutionHeight": "480"
+        }
+        with open(json_path, "w", encoding="utf-8") as f:
+            json.dump(default_data, f, indent=4, ensure_ascii=False)
+
+def _ensureMinecraftDirectoryExists():
+
+    if os.path.isdir(Globals.minecraftDir):
+        return
+    
+    try:
+        os.makedirs(Globals.minecraftDir)
+
+    except Exception:
+        Globals.minecraftDir = Globals.defaultMinecraftDir
+        _ensureMinecraftDirectoryExists()
