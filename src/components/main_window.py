@@ -5,7 +5,7 @@ import threading
 import json
 
 from tkinter import ttk
-from src.config import WINDOW_WIDTH, WINDOW_HEIGHT, BG_BLACK, BG_SECTION, TXT_WHITE, BORDER_BLACK, BORDER_WHITE, BTN_GRAY
+from src.config import WINDOW_WIDTH, WINDOW_HEIGHT, BG_BLACK, BG_SECTION, TXT_WHITE, BORDER_BLACK, BTN_GRAY
 from src.utils import MineManager, load_configuration, get_parse_version, play_minecraft, hasInternetConnection
 from src.components.settings_window import SettingsWindows
 from src.Globals import Globals

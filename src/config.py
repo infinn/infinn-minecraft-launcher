@@ -3,9 +3,6 @@ WINDOW_TITLE = "Minecraft Launcher"
 WINDOW_WIDTH = 450
 WINDOW_HEIGHT = 650
 
-# --- CONSTANTES DE RUTA ---
-DATA_FILE = "data/app_data.json"
-
 # --- CONSTANTES DE ESTILOS ---
 BG_BLACK = "#4f4f4f"
 BG_SECTION = "#383838"
@@ -15,4 +12,4 @@ BORDER_WHITE = "#696969"
 BTN_GRAY = "#6e6e6e"
 
 # --- CONSTANTES ---
-VERSION_LAUNCHER = "alpha 0.1"
+VERSION_LAUNCHER = "v1.0"
