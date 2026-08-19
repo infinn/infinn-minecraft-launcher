@@ -1,8 +1,11 @@
+import os
 import tkinter as tk
 
 from tkinter import ttk
 from src.config import WINDOW_WIDTH, WINDOW_HEIGHT, BG_BLACK, BG_SECTION, TXT_WHITE, BORDER_BLACK, BORDER_WHITE, BTN_GRAY
 from tkinter import filedialog
+
+_icon_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "logo.ico")
 
 class SettingsWindows:
     def __init__(self, main_loop, mine_manager):
@@ -10,6 +13,9 @@ class SettingsWindows:
         self.setting_windows.geometry("400x500")
         self.setting_windows.title("Settings")
         self.setting_windows.configure(background=BG_BLACK)
+
+        if os.path.exists(_icon_path):
+            self.setting_windows.iconbitmap(_icon_path)
 
         self.mine = mine_manager
 
