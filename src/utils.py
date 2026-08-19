@@ -175,4 +175,19 @@ def hasInternetConnection():
         return True
     except OSError:
         return False
+
+def check_java_installed():
+    java_path = minecraft_launcher_lib.utils.get_java_executable()
+    if java_path and os.path.isfile(java_path):
+        return True
+    try:
+        result = subprocess.run(
+            ["java", "-version"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            creationflags=subprocess.CREATE_NO_WINDOW if hasattr(subprocess, "CREATE_NO_WINDOW") else 0,
+        )
+        return result.returncode == 0
+    except FileNotFoundError:
+        return False
     

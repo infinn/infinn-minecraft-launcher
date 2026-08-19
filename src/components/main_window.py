@@ -6,8 +6,9 @@ import json
 
 from tkinter import ttk
 from src.config import WINDOW_WIDTH, WINDOW_HEIGHT, BG_BLACK, BG_SECTION, TXT_WHITE, BORDER_BLACK, BTN_GRAY
-from src.utils import MineManager, load_configuration, get_parse_version, play_minecraft, hasInternetConnection
+from src.utils import MineManager, load_configuration, get_parse_version, play_minecraft, hasInternetConnection, check_java_installed
 from src.components.settings_window import SettingsWindows
+from src.components.java_warning_window import JavaWarningWindow
 from src.Globals import Globals
 from src.core.version_collection import VersionUtils
 
@@ -40,7 +41,13 @@ class MainWindow:
         font_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../font/Minecraft.ttf"))
         ctypes.windll.gdi32.AddFontResourceW(font_path)
 
+        self.java_installed = check_java_installed()
         self._create_widgets()
+
+        if not self.java_installed:
+            self.status_info.config(text="Java not found", fg="red")
+            self._set_log("Java not detected on this system", "error")
+            JavaWarningWindow(master)
 
     def _init_configurtation(self):
         if os.path.isfile(Globals.cacheFile):
@@ -188,6 +195,12 @@ class MainWindow:
 
 
     def _on_play_button(self):
+        if not self.java_installed:
+            self.status_info.config(text="Java not found", fg="red")
+            self._set_log("Java not detected. Please install Java.", "error")
+            JavaWarningWindow(self.master)
+            return
+
         self.launch_button_btn["state"] = "disabled"
         self.status_info.config(text="Starting", fg="yellow")
         self._set_log("Starting Minecraft", "title")
@@ -220,6 +233,12 @@ class MainWindow:
             self.launch_button_btn["state"] = "normal"
     
     def _on_download_button(self):
+        if not self.java_installed:
+            self.status_info.config(text="Java not found", fg="red")
+            self._set_log("Java not detected. Please install Java.", "error")
+            JavaWarningWindow(self.master)
+            return
+
         version = self.verision_cmbbx.get().split(" ")[0]
         self.status_info.config(text="Downloading...", fg="yellow")
         self._set_log("Start Download", "title")
